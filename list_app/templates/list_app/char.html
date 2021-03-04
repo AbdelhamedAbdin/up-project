@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %} List of characters {% endblock %}
+
+{% block body %}
+    <div class="words">
+        <div class="container">
+            <!-- Add Breadcrumbs Navigation Section -->
+            <div class="breads">
+                <h5 class="heading mt-6 leading-7">
+                    <strong>List of words</strong>
+                </h5>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index:home' %}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">List of characters</li>
+                    </ol>
+                </nav>
+            </div>
+            <hr>
+            <!-- Words Table Section -->
+            <div class="common-words">
+                <p class="mt-6">Below is a list of the 100 most common characters (of 732641) in the corpus.</p>
+                <table class="Table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Character</th>
+                            <th>Frequency</th>
+                            <th>Percentage</th>
+                            <th>Cumulative %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rank, char in characters %}
+                            {% if rank < 100 %}
+                            <tr>
+                                <td>
+                                    {{ rank|add:1 }}
+                                </td>
+                                <td>
+                                    {{ char.character }}
+                                </td>
+                                <td>
+                                    {{ char.freq }}
+                                </td>
+                                <td>
+                                    {{ char.id }}
+                                </td>
+                                <td>
+                                    {{ char.id }}
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

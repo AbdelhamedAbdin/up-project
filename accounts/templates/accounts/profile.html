@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %} Login Page {% endblock %}
+
+{% block body %}
+    <div class="profile">
+        <div class="container">
+            <h5 class="text-center">
+                <p>username: {{ profile.user.username }}</p>
+                <p>email: {{ profile.user.username }}</p>
+                <p class="text-center text-decoration-none">
+                    <a href="{% url 'accounts:change_password' %}">Change your password</a>
+                </p>
+            </h5>
+        </div>
+    </div>
+{% endblock %}

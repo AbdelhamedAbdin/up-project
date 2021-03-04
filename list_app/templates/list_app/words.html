@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %} List of words {% endblock %}
+
+{% block body %}
+    <div class="words">
+        <div class="container">
+            <!-- Add Breadcrumbs Navigation Section -->
+            <div class="breads">
+                <h5 class="heading mt-6 leading-7">
+                    <strong>List of words</strong>
+                </h5>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index:home' %}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">List of words</li>
+                    </ol>
+                </nav>
+            </div>
+            <hr>
+            <!-- Words Table Section -->
+            <div class="common-words">
+                <p class="mt-6">Below is a list of the 100 most common words (of {{ pages.count }}) in the corpus.</p>
+                <table class="Table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Orthographic Form</th>
+                            <th>Jyutping</th>
+                            <th>POS Tag</th>
+                            <th>Frequency</th>
+                            <th>Percentage</th>
+                            <th>Cumulative %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rank, word in words %}
+                            {% if rank < 100 %}
+                            <tr>
+                                <td>
+                                    {{ rank|add:1 }}
+                                </td>
+                                <td>
+                                    <a href="#">{{ word.orth }}</a>
+                                </td>
+                                <td>
+                                    {{ word.pron }}
+                                </td>
+                                <td>
+                                    {{ word.tag }}
+                                </td>
+                                <td>
+                                    {{ word.freq }}
+                                </td>
+                                <td>
+                                    {{ word.id }} %
+                                </td>
+                                <td>
+                                    {{ word.id }} %
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

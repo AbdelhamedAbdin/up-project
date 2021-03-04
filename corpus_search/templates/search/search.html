@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% block title %} Search {% endblock %}
+
+{% block body %}
+    <div class="search">
+        <div class="container">
+            <!-- Add Breadcrumbs Navigation Section -->
+            <div class="breads">
+                <h5 class="heading mt-6 leading-7">
+                    <strong>Search the Corpus</strong>
+                </h5>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index:home' %}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Search the corpus</li>
+                    </ol>
+                </nav>
+            </div>
+            <hr>
+
+            <!-- Search formsets -->
+            <div class="search-field">
+                <h2 class="show"></h2>
+                <form method="get" id="main_search">
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <div class="col-md-2 d-inline p-2">
+                            <label>Sentence or Word</label>
+                        </div>
+                        <div class="col-md-2 d-inline p-2">
+                            <select name="formsets-option" class="form-control">
+                                <option id="contains" value="contains">contains</option>
+                                <option id="start_with" value="start_with">start with</option>
+                                <option id="is" value="is">is</option>
+                                <option id="end_with" value="end_with">end with</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5 d-inline p-2">
+                            <input id="search_btn" type="text" class="form-control" placeholder="search" name="query" value="{{ request.GET.query }}">
+                        </div>
+                        <div class="col-md-2 d-inline p-2">
+                            <select name="verb-option" class="form-control">
+                                <option value="">Any POS</option>
+                                <option value="Adj">Adjective</option>
+                                <option value="Adv">Adverb</option>
+                                <option value="Asp">Aspect Marker</option>
+                                <option value="Cl">Classifier</option>
+                                <option value="Conj">Conjunction</option>
+                                <option value="Det">Determiner</option>
+                                <option value="Idiom">Idiom</option>
+                                <option value="Intj">Interjection</option>
+                                <option value="Noun">Noun</option>
+                                <option value="Num">Number</option>
+                                <option value="Ono">Onomatopoeia</option>
+                                <option value="Part">Particle</option>
+                                <option value="Prep">Preposition</option>
+                                <option value="Pro">Pronoun</option>
+                                <option value="Pu">Punctuation</option>
+                                <option value="SFP">Sentence-Final Particle</option>
+                                <option value="Verb">Verb</option>
+                                <option value="X">Unclassified</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 d-inline p-2">
+                            <button class="fa fa-plus d-inline p-2"></button>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="submit" name="main_search" value="Search" class="btn btn-primary">
+                            <a href="{% url 'search:search' %}" style="color: #c53030; margin-left: 10px;border: 0; background-color: transparent;cursor: pointer">Clear Search</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% if "query" in request.GET %}
+            {% if sentences.count != 0 %}
+            <!-- Taping Section -->
+            <div class="intro-tap mt-6">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#sentence" role="tab" data-toggle="tab">Sentence (
+                            {% if sentences %}
+                            {{ sentences.paginator.count }}
+                            {% else %}
+                                0
+                            {% endif %}
+                            )</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#word" role="tab" data-toggle="tab">Words (66)</a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content mt-6">
+                    <div role="tabpanel" class="tab-pane in active" id="sentence">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4">
+                                {% include 'search/filter.html' %}
+                            </div>
+                            <!-- Body of search of corpus page -->
+                            <div class="col-lg-9 col-md-8">
+                                <span class="record-number">Showing 1 to 20 of {{ sentences.paginator.count }} records</span>
+                                {% for sentence in sentences %}
+                                <div class="sentence-details mt-6">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td class="td-counter">{{ forloop.counter }}.</td>
+                                                <td>
+                                                    <table class="w-full">
+                                                        <tbody>
+                                                        <tr>
+                                                            <td class="font-medium w-12 pr-8">
+                                                                <strong>Actor:</strong>
+                                                            </td>
+                                                            {% for actor in filter.actors %}
+                                                                {% if actor.id == sentence.actor_id %}
+                                                                    <td>
+                                                                        {{ actor.name_en }} / {{ actor.name_zh }} ({{ actor.code }})
+                                                                        [{% if actor.gender == 0 %}
+                                                                                female
+                                                                            {% else %}
+                                                                                male
+                                                                            {% endif %}
+                                                                            {% if actor.age == 0 %}
+                                                                                adult
+                                                                            {% elif actor.age == 1 %}
+                                                                                child
+                                                                            {% else %}
+                                                                                teenager
+                                                                            {% endif %}]
+                                                                    </td>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            <td class="align-top w-32" rowspan="2">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="font-medium w-12 pr-8">
+                                                                <strong>Film:</strong>
+                                                            </td>
+                                                            {% for film in filter.films %}
+                                                                {% if film.id == sentence.film_id %}
+                                                                <td>
+                                                                    {{ film.name_en }} / {{ film.name_zh }} ({{ film.year }}) @
+                                                                    {{ sentence.converter_time_start }} - {{ sentence.converter_time_end }}
+                                                                    [{{ sentence.real_time_duration }}]
+                                                                </td>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <div class="mt-4">
+                                                        <div class="text-lg">{{ sentence.characters_string }}</div>
+                                                    </div>
+                                                    <div class="mt-4">
+                                                        <div class="Annotation">
+                                                            <div class="flex flex-wrap -ml-4 -mt-4">
+                                                                <div class="pl-4 pt-4">
+                                                                    <div class="text-lg"><a class="text-blue-700" href="/v2/words/00021">佢</a></div>
+                                                                    <div>keoi5</div>
+                                                                    <div class="text-gray-700 text-sm uppercase">Pro</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="word">
+                        <div class="words">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <!-- Words Table Section -->
+                                    <div class="common-words">
+                                        <p class="mt-6">Below is a list of the 100 most common words (of {{ pages.count }}) in the corpus.</p>
+                                        <table class="Table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Frequency</th>
+                                                    <th>Orthographic Form</th>
+                                                    <th>Jyutping</th>
+                                                    <th>POS Tag</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for rank, word in words %}
+                                                    {% if rank < 100 %}
+                                                    <tr>
+                                                        <td>
+                                                            {{ word.freq }}
+                                                        </td>
+                                                        <td>
+                                                            <a href="#">{{ word.orth }}</a>
+                                                        </td>
+                                                        <td>
+                                                            {{ word.pron }}
+                                                        </td>
+                                                        <td>
+                                                            {{ word.tag }}
+                                                        </td>
+                                                    </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-bar text-center">
+                <div class="container">
+                    <span class="step-links">
+                        {% if sentences.has_previous %}
+
+                            <a href="?page_number={{ sentences.previous_page_number }}">previous</a>
+                        {% endif %}
+
+                        <span class="current">
+                            Page {{ sentences.number }} of {{ sentences.paginator.num_pages }}.
+                        </span>
+
+                        {% if sentences.has_next %}
+                            <a href="?&page_number={{ sentences.next_page_number }}">next</a>
+                            <a href="?&page_number={{ sentences.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            {% else %}
+                <!-- search not found result -->
+                {% include 'search/search_not_found.html' %}
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+{#    <script type="text/javascript">#}
+{#        $(document).on("submit", "#main_search", function (e) {#}
+{#            e.preventDefault()#}
+{##}
+{#            let x = $.ajax({#}
+{#                type: "GET",#}
+{#                url: "{% url 'search:search' %}",#}
+{#                data: {#}
+{#                    option1: $("#contains").val(),#}
+{#                    option2: $("#start_with").val(),#}
+{#                    option3: $("#is").val(),#}
+{#                    option4: $("#end_with").val(),#}
+{#                    csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]")#}
+{#                }#}
+{#            })#}
+{#            console.log(x.data)#}
+{#        })#}
+{#    </script>#}
+{% endblock %}
